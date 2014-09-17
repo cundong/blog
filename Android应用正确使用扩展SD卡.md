@@ -91,5 +91,5 @@ Google做了这个限制后解决了这个问题：
 
 
 参考：
- [Google Plus](https://plus.google.com/+TodLiebeck/posts/gjnmuaDM8sn)
+ [Google Plus](https://plus.google.com/+TodLiebeck/posts/gjnmuaDM8sn)<br/>
  [Android doc](http://source.android.com/devices/tech/storage/index.html)
