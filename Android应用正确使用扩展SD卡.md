@@ -89,11 +89,8 @@ Google做了这个限制后解决了这个问题：
 >      }
 
 参考：
+
 [https://plus.google.com/+TodLiebeck/posts/gjnmuaDM8sn][2]
 [http://blog.csdn.net/olevin/article/details/29575127][3]
 [http://source.android.com/devices/tech/storage/index.html][4]
 
-  [1]: https://plus.google.com/+TodLiebeck/posts/gjnmuaDM8sn
-  [2]: https://plus.google.com/+TodLiebeck/posts/gjnmuaDM8sn
-  [3]: http://blog.csdn.net/olevin/article/details/29575127
-  [4]: http://source.android.com/devices/tech/storage/index.html
