@@ -4,7 +4,7 @@
 
 自Android 4.4起，Android中的WebView开始基于Chromium（ 这大概是因为Android部门负责人从Andy Rubin变成了Chrome部门的主管Sundar Pichai了吧，^_^）。
 
-这个改变，使得WebView的性能大幅度提升，并且对HTML5, CSS3, and JavaScript有了更好的支持。
+这个改变使得WebView的性能大幅度提升，并且对HTML5, CSS3, and JavaScript有了更好的支持。
 
 那么，作为一个客户端开发者，我们写代码的时候需要注意哪些呢？
 
@@ -124,6 +124,8 @@ mWebView.getSettings().getUserAgentString();
 [remote-debugging][1]
 
 ![remote-debugging][2]
+
+# 7.其他
 
   [1]: https://developers.google.com/chrome-developer-tools/docs/remote-debugging
   [2]: https://developer.chrome.com/devtools/docs/remote-debugging/remote-debug-banner.png
