@@ -122,8 +122,22 @@ mWebView.getSettings().getUserAgentString();
 
 具体可以看：
 [remote-debugging][1]
-
 ![remote-debugging][2]
+
+# 6.使用addJavascriptInterface()的注意事项
+
+从Android4.2开始。
+只有添加  @JavascriptInterface 声明的Java方法才可以被JavaScript调用。
+
+```java
+class JsObject {
+    @JavascriptInterface
+    public String toString() { return "injectedObject"; }
+ }
+ webView.addJavascriptInterface(new JsObject(), "injectedObject");
+ webView.loadData("", "text/html", null);
+ webView.loadUrl("javascript:alert(injectedObject.toString())");
+ ```
 
   [1]: https://developers.google.com/chrome-developer-tools/docs/remote-debugging
   [2]: https://developer.chrome.com/devtools/docs/remote-debugging/remote-debug-banner.png
