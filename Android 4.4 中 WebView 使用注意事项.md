@@ -4,7 +4,7 @@
 
 自Android 4.4起，Android中的WebView开始基于Chromium（ 这大概是因为Android部门负责人从Andy Rubin变成了Chrome部门的主管Sundar Pichai了吧，^_^）。
 
-这个改变，使得WebView的性能大幅度提升，并且对HTML5, CSS3, and JavaScript有了更好的支持。
+这个改变使得WebView的性能大幅度提升，并且对HTML5, CSS3, and JavaScript有了更好的支持。
 
 那么，作为一个客户端开发者，我们写代码的时候需要注意哪些呢？
 
@@ -40,7 +40,7 @@ runOnUiThread(newRunnable(){
 千万不要这样做，Android 4.4中，提供了新的Api来做这件事情。
 evaluateJavascript() 就是专门来异步执行JavaScript代码的。
 
-# evaluateJavascript() 方法
+# 3.evaluateJavascript() 方法
 
 专门用于异步调用JavaScript方法，并且能够得到一个回调结果。
 
@@ -55,7 +55,7 @@ evaluateJavascript() 就是专门来异步执行JavaScript代码的。
 });
 ```
 
-# 3.处理 WebView 中 url 跳转
+# 4.处理 WebView 中 url 跳转
 
 新版WebView对于自定义scheme的url跳转，新增了更为严格的限制条件。
 当你实现了 shouldOverrideUrlLoading() 或 shouldInterceptRequest() 回调，WebView 也只会在跳转url是合法Url时才会跳转。
@@ -97,7 +97,7 @@ webView.loadDataWithBaseURL("example-app://example.co.uk/", HTML_DATA,
  null,"UTF-8",null);
 ```
 
-# 4.UserAgent 变化
+# 5.UserAgent 变化
 
 如果你的App对应的服务端程序，会根据客户端传来的UserAgent来做不同的事情，那么你需要注意的是，新版本的WebView中，UserAgent有了些微妙的改变：
 
@@ -116,7 +116,7 @@ mWebView.getSettings().getUserAgentString();
 
 来设置和获取自定义的UserAgent。
 
-# 5.Remote Debugging
+# 6.Remote Debugging
 
 新版的WebView还提供了一个很厉害的功能：使用Chrome来调试你运行在WebView中的程序。
 
@@ -124,6 +124,7 @@ mWebView.getSettings().getUserAgentString();
 [remote-debugging][1]
 ![remote-debugging][2]
 
+<<<<<<< HEAD
 # 6.使用addJavascriptInterface()的注意事项
 
 从Android4.2开始。
@@ -138,6 +139,9 @@ class JsObject {
  webView.loadData("", "text/html", null);
  webView.loadUrl("javascript:alert(injectedObject.toString())");
  ```
+=======
+# 7.其他
+>>>>>>> FETCH_HEAD
 
   [1]: https://developers.google.com/chrome-developer-tools/docs/remote-debugging
   [2]: https://developer.chrome.com/devtools/docs/remote-debugging/remote-debug-banner.png
