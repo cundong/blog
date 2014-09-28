@@ -116,19 +116,10 @@ mWebView.getSettings().getUserAgentString();
 
 来设置和获取自定义的UserAgent。
 
-# 6.Remote Debugging
-
-新版的WebView还提供了一个很厉害的功能：使用Chrome来调试你运行在WebView中的程序。
-
-具体可以看：
-[remote-debugging][1]
-![remote-debugging][2]
-
-<<<<<<< HEAD
 # 6.使用addJavascriptInterface()的注意事项
 
 从Android4.2开始。
-只有添加  @JavascriptInterface 声明的Java方法才可以被JavaScript调用。
+只有添加  @JavascriptInterface 声明的Java方法才可以被JavaScript调用，例如：
 
 ```java
 class JsObject {
@@ -139,9 +130,14 @@ class JsObject {
  webView.loadData("", "text/html", null);
  webView.loadUrl("javascript:alert(injectedObject.toString())");
  ```
-=======
-# 7.其他
->>>>>>> FETCH_HEAD
+ 
+# 7.Remote Debugging
+
+新版的WebView还提供了一个很厉害的功能：使用Chrome来调试你运行在WebView中的程序。
+
+具体可以看：
+[remote-debugging][1]
+![remote-debugging][2]
 
   [1]: https://developers.google.com/chrome-developer-tools/docs/remote-debugging
   [2]: https://developer.chrome.com/devtools/docs/remote-debugging/remote-debug-banner.png
