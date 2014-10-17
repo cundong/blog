@@ -14,7 +14,7 @@
 
 * 配置环境变量
 
-设置环境变量后，在命令行下测试ant命令，如果得到如下效果，则说明配置成功：
+设置环境变量后，在命令行下测试ant命令，如果出现以下内容，则说明配置成功：
 
 ``` shell
 cundongdeMacBook-Pro:~ cundong$ ant
@@ -33,62 +33,65 @@ Build failed
 
 先介绍一下iZhihuPaper的工程依赖情况。
 
-* iZhihuPaper依赖actionbarpulltorefresh.extras.actionbarsherlock、Crouton、PhotoView
+* iZhihuPaper 依赖 actionbarpulltorefresh.extras.actionbarsherlock、Crouton、PhotoView
 
-* actionbarpulltorefresh.extras.actionbarsherlock依赖ActionBarPullToRefresh
+* actionbarpulltorefresh.extras.actionbarsherlock 依赖 ActionBarPullToRefresh
 
-* Crouton依赖SupportLib
+* ActionBarPullToRefresh 依赖 actionbarsherlock、SmoothProgressBar
 
-* PhotoView无任何依赖
+* Crouton、actionbarsherlock 依赖 SupportLib
 
-* ActionBarPullToRefresh依赖actionbarsherlock、SmoothProgressBar
+* PhotoView、SmoothProgressBar、SupportLib 无任何依赖
 
-* actionbarsherlock依赖SupportLib
+###生成方式
 
-接下来，我们需要为iZhihuPaper工程以及它所依赖的所有工程生成 local.properties、build.xml 文件。
+我们需要为iZhihuPaper工程和他直接或者间接引用的所有工程（一共7个）都生成local.properties、build.xml文件。
 
-###生成
+命令格式：
 
-我们需要为iZhihuPaper工程和他直接或者间接引用的所有工程都生成local.properties、build.xml文件。
-
-调用命令：
 android update project --target {target版本} --name {工程名字} --path {工程目录}
 
-包括iZhihuPaper工程和它依赖的工程，一共需要执行8个命令：
+依次执行以下命令：
 
 1.
 ``` shell
-android update project --target android-20 --name iZhihuPaper --path /Users/cundong/Documents/github/iZhihuPaper
+android update project --target android-20 --name SupportLib --path /Users/cundong/Documents/github/SupportLib
 ``` 
 
 2.
 ``` shell
-android update project --target android-20 --name actionbarpulltorefresh.extras.actionbarsherlock --path /Users/cundong/Documents/github/actionbarpulltorefresh.extras.actionbarsherlock
-``` 
-3.
-``` shell
-android update project --target android-20 --name Crouton --path /Users/cundong/Documents/github/Crouton
-``` 
-4.
-``` shell
 android update project --target android-20 --name PhotoView --path /Users/cundong/Documents/github/PhotoView
-``` 
-5.
-``` shell
-android update project --target android-20 --name SupportLib --path /Users/cundong/Documents/github/SupportLib
 ```
-6.
+
+3.
 ``` shell
 android update project --target android-20 --name SmoothProgressBar --path /Users/cundong/Documents/github/SmoothProgressBar
 ```
-7.
+
+4.
+``` shell
+android update project --target android-20 --name Crouton --path /Users/cundong/Documents/github/Crouton
+``` 
+
+5.
 ``` shell
 android update project --target android-20 --name actionbarsherlock --path /Users/cundong/Documents/github/actionbarsherlock
 ```
-8.
+
+6.
 ``` shell
 android update project --target android-20 --name ActionBarPullToRefresh --path /Users/cundong/Documents/github/ActionBarPullToRefresh
 ```
+
+7.
+``` shell
+android update project --target android-20 --name actionbarpulltorefresh.extras.actionbarsherlock --path /Users/cundong/Documents/github/actionbarpulltorefresh.extras.actionbarsherlock
+``` 
+
+8.
+``` shell
+android update project --target android-20 --name iZhihuPaper --path /Users/cundong/Documents/github/iZhihuPaper
+``` 
 
 ###注意事项
 
