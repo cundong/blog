@@ -235,11 +235,11 @@ ${channel}，即为当前循环的渠道号
 
 proguard-project.txt，即混淆时的配置文件。
 
-1.引用的第三方jar包，不要混淆；
-2.自己写的控件，即需要配置在layout文件中的Widget，不要混淆；
-3.Android的基础组件，不要混淆。
+* 引用的第三方jar包，不要混淆；
+* 自己写的控件，即需要配置在layout文件中的Widget，不要混淆；
+* Android的基础组件，不要混淆。
 
-4.需要在project.properties中配置：proguard.config=${sdk.dir}/tools/proguard/proguard-android.txt:proguard-project.txt
+* 需要在project.properties中配置：proguard.config=${sdk.dir}/tools/proguard/proguard-android.txt:proguard-project.txt
 
 详细例子可参考： [ZhihuPaper/proguard-project.txt][7]
 
@@ -247,9 +247,11 @@ proguard-project.txt，即混淆时的配置文件。
 在iZhihuPaper中创建一个批处理文件，Mac为*.sh文件，Window为*.bat文件：
 
 ```shell
->cd /Users/cundong/Documents/github/iZhihuPaper
+
+cd /Users/cundong/Documents/github/iZhihuPaper
 ant deploy
 pause
+
 ```
 
 调用这个批处理文件，即可进行批量打混淆后的渠道包。
