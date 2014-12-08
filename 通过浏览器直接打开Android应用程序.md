@@ -7,6 +7,8 @@
 
 如果本地已经安装了指定Android应用，就直接打开它；如果没有安装，则直接下载该应用的安装文件（也可以跳转到下载页面）。
 
+在大部分手机浏览器上测试过，没问题。
+
 ## 实现原理
 
 1.为Android应用的启动Activity设置一个Schema；
@@ -15,8 +17,25 @@
 
 3，如果在指定的时间内跳转未成功，则当前页跳转到apk的下载地址（或者下载页）；
 
-## JavaScript代码
-```javascript
+## HTML代码
+```html
+<!doctype html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+		
+		<title>this's a demo</title>
+		<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,minimal-ui">
+	</head>
+	<body>
+		<div>
+			<a id="J-call-app" href="javascript:;" class="label">立即打开&gt;&gt;</a>
+            <input id="J-download-app" type="hidden" name="storeurl" value="https://passport.sina.cn/sso/jmp?action=iosapp">
+		</div>
+		
 		<script>
 			(function(){
 				var ua = navigator.userAgent.toLowerCase();
@@ -59,12 +78,14 @@
 				}, false);
 			})()
 		</script>
+	</body>
+</html>
 ```
 		
-## Android代码
+## AndroidMainfext.xml代码
 
 ``` xml
-        <activity
+<activity
             android:name=".activity.LauncherActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:label="@string/app_name"
