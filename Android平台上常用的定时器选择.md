@@ -27,8 +27,7 @@ Android平台定时器有两个：
 			/* */
 		}
 	}
-	
-```java
+```
 
 Timer实际上就是装装了一个Thread、一个TimerTask队列，这个TimerTask队列按照一定的方式排队执行。
 
