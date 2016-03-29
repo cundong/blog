@@ -364,6 +364,7 @@ Stub运行在服务器端，远程服务器端通过IBinder接口的onTtransact()方法来接收数据，处
 
 
 参考：
+
 [1][http://www.jianshu.com/p/cfb1d2a109a2]
 
 [2][http://blog.csdn.net/xude1985/article/details/9232049]
