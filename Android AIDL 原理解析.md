@@ -6,7 +6,7 @@
 
 通过AIDL，可以让本地调用远程服务器的接口就像调用本地接口那么简单，让用户无需关注内部细节，只需要实现自己的业务逻辑接口，内部复杂的参数序列化发送、接收、客户端调用服务端的逻辑，你都不需要去关心了。
 
-## 一个简单的例子
+## 一 一个简单的例子
 
 我们通过一个简单的跨进程调用的例子来理解AIDL。
 
@@ -347,19 +347,19 @@ private ServiceConnection mConnection = new ServiceConnection() {
   }
  ```
  
-## 原理分析
+## 二 原理分析
 
 通过阅读自动生成的IDownloadService.java，可以看出，这是一个经典的代理模式架构。AIDL的代码生成器，已经根据.aidl文件自动帮我们生成Proxy、Stub（抽象类）两个类，并且把客户端代理mRemote的transact()过程以及
 服务器端的onTtransact()过程默认实现好了，我们只需要在服务器端继承Stub，实现自己的业务类（在onTtransact()中会调用）。
 
-### UML图
+### 1. UML图
 ![IDownloadService.java UML图][4]
 
-### 代码分析
+### 2. 代码分析
 
 代码主要分为Proxy、Stub两部分。
 
-####Proxy
+#### 1) Proxy
 
 Proxy运行在客户端，它实现了IDownloadService接口，并且持有一个远程代理IBinder mRemote，mRemote不做任何业务逻辑处理，仅仅通过IBinder接口的transact()方法，把客户端的调用参数序列化后transact到远程服务器。
 
@@ -382,7 +382,7 @@ public void download(java.lang.String url) throws android.os.RemoteException {
 ```
 _data即调用接口传入的参数，_reply为调用方法得到的返回值，```mRemote.transact(Stub.TRANSACTION_download, _data, _reply, 0);```为调用过程。
 
-####Stub
+#### 2) Stub
 
 Stub运行在服务器端，继承自Binder，同样也实现了IDownloadService接口，它的核心逻辑在onTransact方法中：
 
