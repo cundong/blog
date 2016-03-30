@@ -349,8 +349,8 @@ private ServiceConnection mConnection = new ServiceConnection() {
  
 ## 原理分析
 
-通过阅读自动生成的IDownloadService.java，我们可以看出，这是一个明显的代理模式示例。AIDL的代码生成器，已经.aidl文件自动帮我们生成Proxy、Stub两个类的代码，并且把mRemote的transact()过程以及
-服务器端的onTtransact()过程默认实现好了，我们只需要在服务器端实现自己的Stub类（在onTtransact()中会调用）。
+通过阅读自动生成的IDownloadService.java，可以看出，这是一个经典的代理模式架构。AIDL的代码生成器，已经根据.aidl文件自动帮我们生成Proxy、Stub（抽象类）两个类，并且把客户端代理mRemote的transact()过程以及
+服务器端的onTtransact()过程默认实现好了，我们只需要在服务器端继承Stub，实现自己的业务类（在onTtransact()中会调用）。
 
 ### UML图
 ![IDownloadService.java UML图][4]
@@ -359,9 +359,11 @@ private ServiceConnection mConnection = new ServiceConnection() {
 
 代码主要分为Proxy、Stub两部分。
 
-Proxy运行在客户端，它实现了IDownloadService接口，并且持有一个远程代理IBinder mRemote，mRemote不做任何业务逻辑处理，仅仅通过IBinder接口的transact()方法，把客户端的调用参数序列化并且transact到远程服务器。
+####Proxy
 
-如：
+Proxy运行在客户端，它实现了IDownloadService接口，并且持有一个远程代理IBinder mRemote，mRemote不做任何业务逻辑处理，仅仅通过IBinder接口的transact()方法，把客户端的调用参数序列化后transact到远程服务器。
+
+示例：
 ```java
 @Override
 public void download(java.lang.String url) throws android.os.RemoteException {
@@ -379,6 +381,8 @@ public void download(java.lang.String url) throws android.os.RemoteException {
 }         
 ```
 _data即调用接口传入的参数，_reply为调用方法得到的返回值，```mRemote.transact(Stub.TRANSACTION_download, _data, _reply, 0);```为调用过程。
+
+####Stub
 
 Stub运行在服务器端，继承自Binder，同样也实现了IDownloadService接口，它的核心逻辑在onTransact方法中：
 
@@ -407,7 +411,7 @@ public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws
     return super.onTransact(code, data, reply, flags);
 }
 ```
-远程服务器端通过IBinder接口的onTtransact()方法来接收数据，处理数据，调用真实的业务逻辑代码（如上面的download接口），通过reply像客户端传递返回值。
+远程服务器端通过IBinder接口的onTtransact()方法来接收数据、处理数据，并且调用真实的业务逻辑代码（如上面的download接口），通过reply像客户端传递返回值。
 
 另外，Stub中另外一个比较重要的接口就是asInterface()接口，我们在客户端真正使用的时候通常会这样使用它：
 
@@ -429,6 +433,9 @@ public static com.cundong.touch.IDownloadService asInterface(android.os.IBinder 
         }
 ```
  先通过queryLocalInterface查询，如果服务端和客户端都是在同一个进程，那么就不需要跨进程了，直接将IDownloadService当做普通的对象来使用，否则会返回远程对象的代理对象。
+
+
+至此，我们就通过源码层面了解了AIDL是如何工作了。
 
 参考：
 
