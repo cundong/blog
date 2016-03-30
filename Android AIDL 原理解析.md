@@ -12,7 +12,7 @@
 
 设计一个简单的场景：
 
-> 我们有一个```CoreService```运行在```":core"```进程中，提供文件下载服务，我们会在Activity中去bind这个Service，并且调用它为我们提供的服务。
+> 我们有一个```CoreService```运行在```"com.cundong.practice:core"```进程中，提供文件下载服务，我们会在```"com.cundong.practice"```进程中去bind这个Service，调用它为我们提供的服务。
 
 实现起来很简单，只需要以下几个步骤：
 
