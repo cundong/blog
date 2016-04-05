@@ -449,4 +449,4 @@ public static com.cundong.touch.IDownloadService asInterface(android.os.IBinder 
   [1]: http://www.jianshu.com/p/cfb1d2a109a2
   [2]: http://blog.csdn.net/xude1985/article/details/9232049
   [3]: http://developer.android.com/intl/zh-cn/guide/components/aidl.html
-  [4]: https://static.oschina.net/uploads/img/201603/29210415_3uK1.jpg
+  [4]: http://7xr1sh.dl1.z0.glb.clouddn.com/469751777359982261.jpg
