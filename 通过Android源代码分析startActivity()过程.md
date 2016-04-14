@@ -1,4 +1,4 @@
-#通过Android源代码分析startActivity()过程
+#通过Android源代码分析startActivity()过程（上）
 
 ----------
 
@@ -28,13 +28,13 @@ system_server进程中的ams绑定在一起，这样ams就会在特定的时机去回调app进程中Activi
 
 通过阅读源码，我们可以参照考[前一篇关于AIDL的博文][1]中的UML图，画出这两部分的UML图，这也是一个典型的代理模式，我们把这两部分的UML通前一篇文章中的UML图比较一下，架构基本一模一样。
 
-1.app进程调用ams过程中用到的类UML图
+### 1.app进程调用ams过程中用到的类UML图
 
 ![app进程调用ams过程中用到的类UML图][2]
 
 其中，ActivityManagerProxy是ActivityManagerService在普通app进程中的代理，app进程不会直接跟ActivityManagerService交互，而是通过其留在app进程中的代理ActivityManagerProxy来与ActivityManagerService通信。
 
-2.ams调用app进程中用到的类UML图
+### 2.ams调用app进程中用到的类UML图
 
 ![ams调用app进程中用到的类UML图][3]
 
@@ -42,6 +42,27 @@ system_server进程中的ams绑定在一起，这样ams就会在特定的时机去回调app进程中Activi
 其留在ActivityManagerService进程的代理对象ApplicationThreadProxy来与应用进程通信。
 
 ## 三 先看app进程调用ams过程的代码
+
+整个跳转逻辑大概可以分拆为以下几个步骤：
+
+ -  Activity#startActivity
+ -  Activity#startActivityForResult
+ -  Instrumentation#execStartActivity
+ -  ActivityManagerNative#getDefault().startActivity
+ -  ActivityManagerProxy#startActivity
+ -  ActivityMangerService#startActivity
+ -  ActivityMangerService#startActivityAsUser
+ -  ActivityStackSupervisor#startActivityMayWait
+ -  ActivityStackSupervisorr#startActivityLocked
+ -  ActivityStackSupervisorr#startActivityUncheckedLocked
+ -  ActivityStack#startActivityLocked
+ -  ActivityStackSupervisor#resumeTopActivitiesLocked
+ -  ActivityStack#resumeTopActivityLocked
+ -  ActivityStack#resumeTopActivityInnerLocked
+ -  ActivityStackSupervisor#startSpecificActivityLocked
+ -  ActivityManagerService#startProcessLocked
+ -  Process#start
+
 
 调用startActivity(Intent intent)打开一个Activity，或者在Launcher上点击应用图标，最终都会调用Activity#startActivity()接口：
 
@@ -227,10 +248,6 @@ static public IActivityManager asInterface(IBinder obj) {
 在饶了这么多路之后，我们终于看懂了，startActivity()的过程实际上最后是调用ActivityManagerProxy的startActivity()方法，ActivityManagerProxy的startActivity()方法最终还是通过Binder调用，调用到ActivityMangerService的startActivity()方法中。
 
 好吧，我们再去ActivityMangerService的startActivity()方法中去吧。
-
-ActivityMangerService 位于：
-
-[https://github.com/android/platform_frameworks_base/blob/master/services/core/java/com/android/server/am/ActivityManagerService.java][4]
 
 ActivityMangerService#startActivity：
 
@@ -2364,11 +2381,8 @@ Process.ProcessStartResult startResult = Process.start(entryPoint,
     }
 ```
 
-写到这里，当我们去startActivity()的时候，目标app进程就起来了(如果早就被启动过了就会回到栈顶)，接下来就是启动进程的ActivityThread中main()方法，并且开启主线程消息循环，同时将app进程通AMS绑定在一起了，明天再写吧。
+写到这里，目标app进程就已经启动起来了(如果早就被启动过了就会回到栈顶)，接下来就是执行目标app进程ActivityThread中main()方法，开启主线程消息循环，同时将app进程通AMS绑定在一起了，下一篇blog将分析这部分代码。
 
-## 四 再看ams调用app进程的代码
-
-## 五 总结
 
   [1]: http://my.oschina.net/liucundong/blog/649490
   [2]: http://7xr1sh.dl1.z0.glb.clouddn.com/560720435361715830.jpg
