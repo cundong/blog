@@ -1,4 +1,3 @@
-
 #Í¨¹ıAndroidÔ´´úÂë·ÖÎöstartActivity()¹ı³Ì£¨ÏÂ£©
 
 ¼ÌĞø·ÖÎöstartActivity()¡£
@@ -11,10 +10,10 @@ zygote½ø³Ìfork³öÒ»¸öĞÂµÄapp½ø³Ìºó£¬¾Í»áµ÷ÓÃËûActivityThreadÀàµÄµÄmain·½·¨À´Æô¶¯Ë
 
 ```java
 public static void main(String[] args) {
-    
+
 	    //1. Îª±¾½ø³Ì×¼±¸ºÃUIÏß³ÌµÄÏûÏ¢¶ÓÁĞºÍLooper
         Looper.prepareMainLooper();
-	
+
 	    //2.°ÑApplicationThread¸úÔ¶³ÌAMS¹ØÁªÆğÀ´
         ActivityThread thread = new ActivityThread();
         thread.attach(false);
@@ -22,10 +21,10 @@ public static void main(String[] args) {
         if (sMainThreadHandler == null) {
             sMainThreadHandler = thread.getHandler();
         }
-	
+
 	    //3. ¿ªÊ¼Ö´ĞĞÏûÏ¢Ñ­»·
         Looper.loop();
-	
+
         throw new RuntimeException("Main thread loop unexpectedly exited");
     }   
 ```
@@ -34,7 +33,7 @@ public static void main(String[] args) {
 ```java
 private void attach(boolean system) {
         if (!system) {
-            
+
 	        //1.ÄÃµ½amsµÄ´úÀí¶ÔÏóActivityManagerProxy£¬µ÷ÓÃËüµÄattachApplication·½·¨
             final IActivityManager mgr = ActivityManagerNative.getDefault();
             try {
@@ -42,7 +41,7 @@ private void attach(boolean system) {
             } catch (RemoteException ex) {
                 // Ignore
             }
-	    
+
 	        //2.Ôö¼ÓÀ¬»ø»ØÊÕ»úÖÆµÄ¹Û²ìÆ÷£¬Í¨¹ıÕâÀïÎÒ¿´¿ÉÒÔ¿´µ½£¬µ±Ê¹ÓÃµÄÄÚ´æ´óÓÚ×ÜÄÚ´æµÄ3/4£¬¾Í»á´¥·¢GC
             BinderInternal.addGcWatcher(new Runnable() {
                 @Override public void run() {
@@ -221,7 +220,7 @@ case BIND_APPLICATION:
 ```java
 
     private void handleBindApplication(AppBindData data) {
-     
+
 	// µÃµ½Ò»¸öInstrumentation¶ÔÏó
         if (data.instrumentationName != null) {
             InstrumentationInfo ii = null;
@@ -385,7 +384,7 @@ ActivityStack´ú±í»ØÍËÕ»ÖĞµÄÒ»¸öµ¥¶ÀµÄActivity£»ActivityStackSupervisorÍ¨¹ı¹ÜÀíAc
             throws RemoteException {
 
         try {
-         
+
             app.thread.scheduleLaunchActivity(new Intent(r.intent), r.appToken,
                     System.identityHashCode(r), r.info, new Configuration(mService.mConfiguration),
                     new Configuration(stack.mOverrideConfig), r.compat, r.launchedFromPackage,
@@ -459,7 +458,7 @@ case LAUNCH_ACTIVITY: {
 
 ```java
     private void handleLaunchActivity(ActivityClientRecord r, Intent customIntent) {
-	
+
 	//ÔÚ´´½¨Activity¶ÔÏóÖ®Ç°£¬³õÊ¼»¯WindowsManagerService
 	WindowManagerGlobal.initialize();
 
@@ -474,7 +473,7 @@ case LAUNCH_ACTIVITY: {
             handleResumeActivity(r.token, false, r.isForward,
                     !r.activity.mFinished && !r.startsNotResumed);
         } else {
-            
+
         }
     }
 ```
@@ -485,7 +484,7 @@ case LAUNCH_ACTIVITY: {
 ```java
     private Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) {
         // System.out.println("##### [" + System.currentTimeMillis() + "] ActivityThread.performLaunchActivity(" + r + ")");
-	
+
 	//1.ÎªnewÒ»¸öActivity¶ÔÏó×¼±¸¸÷ÖÖ¸¨ÖúĞÅÏ¢
         ActivityInfo aInfo = r.activityInfo;
         if (r.packageInfo == null) {
@@ -534,7 +533,7 @@ case LAUNCH_ACTIVITY: {
                 Configuration config = new Configuration(mCompatConfiguration);
                 if (DEBUG_CONFIGURATION) Slog.v(TAG, "Launching activity "
                         + r.activityInfo.name + " with config " + config);
-		
+
 		//3.µ÷ÓÃActivityµÄattach·½·¨£¬ °ÑApplication¡¢ActivityThread¡¢intentµÈ²ÎÊı´«µİ¸øActivity£¬²¢ÇÒÎª°ÑWindowsManagerServiceÒıÓÃ´«ËÆ¸øActivity
                 activity.attach(appContext, this, getInstrumentation(), r.token,
                         r.ident, app, r.intent, r.activityInfo, title, r.parent,
@@ -572,7 +571,7 @@ case LAUNCH_ACTIVITY: {
                     activity.performStart();
                     r.stopped = false;
                 }
-		
+
 		//6.Í¨¹ıInstrumentationÀà£¬µ÷ÓÃËüµÄcallActivityOnRestoreInstanceState()½Ó¿Ú£¬Êµ¼ÊÉÏ»áµ÷ÓÃµ½Activity#onRestoreInstanceState
                 if (!r.activity.mFinished) {
                     if (r.isPersistable()) {
@@ -665,9 +664,9 @@ performStart()£º
 
 ```java
 final void performStart() {
-       
+
         mInstrumentation.callActivityOnStart(this);
-        
+
     }
 ```
 ÕâÀï×¢ÒâÒ»¸öÏ¸½Ú£¬µ±µ÷ÓÃÍêactivity.performStart()ºó£¬Á¢¿Ì¸ør.stopped ¸³ÖµÎª falseÁË£¬ºóÃæ»áÓÃµ½Õâ¸östoped±äÁ¿¡£
@@ -719,7 +718,7 @@ if (!r.activity.mFinished) {
 
     final void handleResumeActivity(IBinder token,
             boolean clearHide, boolean isForward, boolean reallyResume) {
-	
+
 	//1.µ÷ÓÃperformResumeActivity()
 
         ActivityClientRecord r = performResumeActivity(token, clearHide);
@@ -824,7 +823,7 @@ if (!r.activity.mFinished) {
                 Looper.myQueue().addIdleHandler(new Idler());
             }
             r.onlyLocalRequest = false;
-	    
+
             // Tell the activity manager we have resumed.
             if (reallyResume) {
                 try {
@@ -901,10 +900,10 @@ final void performResume() {
         mLastNonConfigurationInstances = null;
 
         mCalled = false;
-        
+
 	//2.
 	mInstrumentation.callActivityOnResume(this);
-        
+
 	//3.
         onPostResume();
     }

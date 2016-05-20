@@ -16,7 +16,7 @@ startActivit()会调用ams去启动app的入口Activity，如果ams发现这个app进程未启动，则
 app进程的ActivityThread main()方法。
 
   - 位于system_server进程中的ams去调用app进程
- 
+
 新启动的app进程，在其ActivityThread main()方法种，会将自己和
 system_server进程中的ams绑定在一起，这样ams就会在特定的时机去回调app进程中Activity的生命周期方法。
 
@@ -44,25 +44,25 @@ system_server进程中的ams绑定在一起，这样ams就会在特定的时机去回调app进程中Activi
 ## 三 先看app进程调用ams过程的代码
 
 整个跳转逻辑大概可以分拆为以下几个步骤：
+ 1.  Activity#startActivity
+ 2.  Activity#startActivityForResult
+ 3.  Instrumentation#execStartActivity
+ 4.  ActivityManagerNative#getDefault().startActivity
+ 5.  ActivityManagerProxy#startActivity
+ 6.  ActivityMangerService#startActivity
+ 7.  ActivityMangerService#startActivityAsUser
+ 8.  ActivityStackSupervisor#startActivityMayWait
+ 9.  ActivityStackSupervisorr#startActivityLocked
+ 10.  ActivityStackSupervisorr#startActivityUncheckedLocked
+ 11.  ActivityStack#startActivityLocked
+ 12.  ActivityStackSupervisor#resumeTopActivitiesLocked
+ 13.  ActivityStack#resumeTopActivityLocked
+ 14.  ActivityStack#resumeTopActivityInnerLocked
+ 15.  ActivityStackSupervisor#startSpecificActivityLocked
+ 16.  ActivityManagerService#startProcessLocked
+ 17.  Process#start
 
- -  Activity#startActivity
- -  Activity#startActivityForResult
- -  Instrumentation#execStartActivity
- -  ActivityManagerNative#getDefault().startActivity
- -  ActivityManagerProxy#startActivity
- -  ActivityMangerService#startActivity
- -  ActivityMangerService#startActivityAsUser
- -  ActivityStackSupervisor#startActivityMayWait
- -  ActivityStackSupervisorr#startActivityLocked
- -  ActivityStackSupervisorr#startActivityUncheckedLocked
- -  ActivityStack#startActivityLocked
- -  ActivityStackSupervisor#resumeTopActivitiesLocked
- -  ActivityStack#resumeTopActivityLocked
- -  ActivityStack#resumeTopActivityInnerLocked
- -  ActivityStackSupervisor#startSpecificActivityLocked
- -  ActivityManagerService#startProcessLocked
- -  Process#start
-
+### Activity#startActivity
 
 调用startActivity(Intent intent)打开一个Activity，或者在Launcher上点击应用图标，最终都会调用Activity#startActivity()接口：
 
@@ -83,6 +83,8 @@ system_server进程中的ams绑定在一起，这样ams就会在特定的时机去回调app进程中Activi
         this.startActivity(intent, null);
     }
 ```
+
+### Activity#startActivityForResult
 
 最终会走到：
 
@@ -142,6 +144,8 @@ Instrumentation.ActivityResult ar =
 
 看到这里，出现了一个新类：Instrumentation，他是干什么的呢？
 
+### Instrumentation#execStartActivity
+
 它是一个Activity的辅助类，躲在界面后面，帮助Activity实现真正的业务逻辑，例如上面的startActivity()跳来跳去，最终还是来到了Instrumentation的execStartActivity()方法，并且执行完execStartActivity方法之后，还接着调用了sendActivityResult方法（ActivityThread类的方法，我们后面会介绍），从而会触发onActivityResult()接口的回调。
 
 我们继续跟踪到Instrumentation#execStartActivity()内部：
@@ -155,7 +159,7 @@ Instrumentation.ActivityResult ar =
         if (referrer != null) {
             intent.putExtra(Intent.EXTRA_REFERRER, referrer);
         }
-        
+
         //1.第一步，迭代Activity，判断是否合法
         if (mActivityMonitors != null) {
             synchronized (mSync) {
@@ -172,18 +176,18 @@ Instrumentation.ActivityResult ar =
                 }
             }
         }
-        
+
         try {
             intent.migrateExtraStreamToClipData();
             intent.prepareToLeaveProcess();
-            
+
             //2.调用ams，真正的去startActivity
             int result = ActivityManagerNative.getDefault()
                 .startActivity(whoThread, who.getBasePackageName(), intent,
                         intent.resolveTypeIfNeeded(who.getContentResolver()),
                         token, target != null ? target.mEmbeddedID : null,
                         requestCode, 0, null, options);
-                        
+
             //3.根据返回值抛异常
             checkStartActivityResult(result, intent);
         } catch (RemoteException e) {
@@ -199,6 +203,8 @@ Instrumentation.ActivityResult ar =
 3) 通过checkStartActivityResult()来检测操作结果
 
 第1、3两个步骤就不细说了，我们主要看ActivityManagerNative.getDefault()的startActivity()方法。
+
+### ActivityManagerNative#getDefault().startActivity
 
 先看看ActivityManagerNative.getDefault()是个什么鬼吧：
 
@@ -223,8 +229,9 @@ private static final Singleton<IActivityManager> gDefault = new Singleton<IActiv
         }
     };
 ```
-原来，是从ServiceManager中拿到一个Service的IBinder，它在ServiceManager中，key值为"activity"，也就是传说中ams的IBinder，并且用asInterface()将其转换了一下，通过前面那篇介绍AIDL原理的博文，我们知道这个asInterface()内部其实就是做一个判断，
-当你调用的接口和调用者属于同一个进程的时候，就当做普通引用来使用接口，当被调用者和调用者不属于同一个进程的时候，就会转化成远程代理。
+原来，是从ServiceManager中拿到一个Service的IBinder，它在ServiceManager中，key值为"activity"，也就是传说中ams的IBinder，并且用asInterface()将其转换了一下，通过前面那篇介绍AIDL原理的博文，我们知道这个asInterface()内部其实就是做一个判断，当你调用的接口和调用者属于同一个进程的时候，就当做普通引用来使用接口，当被调用者和调用者不属于同一个进程的时候，就会转化成远程代理。
+
+### ActivityManagerProxy#startActivity
 
 我们打开asInterface的代码，果然是这样的：
 ```java
@@ -232,7 +239,7 @@ static public IActivityManager asInterface(IBinder obj) {
         if (obj == null) {
             return null;
         }
-        
+
         //queryLocalInterface()就是通过接口描述来查询它是否一个本地接口
         IActivityManager in =
             (IActivityManager)obj.queryLocalInterface(descriptor);
@@ -249,6 +256,8 @@ static public IActivityManager asInterface(IBinder obj) {
 
 好吧，我们再去ActivityMangerService的startActivity()方法中去吧。
 
+### ActivityMangerService#startActivity
+
 ActivityMangerService#startActivity：
 
 ```java
@@ -261,6 +270,9 @@ ActivityMangerService#startActivity：
             UserHandle.getCallingUserId());
     }
 ```
+
+### ActivityMangerService#startActivityAsUser
+
 ActivityMangerService#startActivityAsUser：
 ```java
 @Override
@@ -279,6 +291,8 @@ ActivityMangerService#startActivityAsUser：
 ActivityMangerService#startActivityAsUser中会走到ActivityStackSupervisor#startActivityMayWait中，ActivityStackSupervisor又是什么鬼？
 
 通过类名字就能看出来，他是负责管理Activity栈的一个管理类。
+
+### ActivityStackSupervisor#startActivityMayWait
 
 ActivityStackSupervisorr#startActivityMayWait：
 
@@ -458,6 +472,7 @@ final int startActivityMayWait(IApplicationThread caller, int callingUid,
         }
     }
 ```
+### ActivityStackSupervisorr#startActivityLocked
 
 跳转到：ActivityStackSupervisorr#startActivityLocked()：
 
@@ -751,6 +766,9 @@ final int startActivityMayWait(IApplicationThread caller, int callingUid,
         return err;
     }
 ```
+
+### ActivityStackSupervisorr#startActivityUncheckedLocked
+
 继续跳到：ActivityStackSupervisorr#startActivityUncheckedLocked：
 
 ```java
@@ -1393,6 +1411,7 @@ final int startActivityUncheckedLocked(final ActivityRecord r, ActivityRecord so
         return ActivityManager.START_SUCCESS;
     }
 ```
+### ActivityStack#startActivityLocked
 
 又跳进了ActivityStack#startActivityLocked()：
 
@@ -1562,6 +1581,7 @@ final int startActivityUncheckedLocked(final ActivityRecord r, ActivityRecord so
     }
 
 ```
+### ActivityStackSupervisor#resumeTopActivitiesLocked
 
 startActivityLocked中会调用mStackSupervisor#resumeTopActivitiesLocked()来恢复栈顶Activity。
 
@@ -1595,6 +1615,7 @@ boolean resumeTopActivitiesLocked(ActivityStack targetStack, ActivityRecord targ
         return result;
     }
 ```
+### ActivityStack#resumeTopActivityLocked
 
 继续跳转到ActivityStack#resumeTopActivityLocked：
 
@@ -1604,7 +1625,7 @@ final boolean resumeTopActivityLocked(ActivityRecord prev, Bundle options) {
             // Don't even start recursing.
             return false;
         }
-        
+
         boolean result = false;
         try {
             // Protect against recursion.
@@ -1620,6 +1641,9 @@ final boolean resumeTopActivityLocked(ActivityRecord prev, Bundle options) {
         return result;
     }
 ```
+
+### ActivityStack#resumeTopActivityInnerLocked
+
 继续跳转到ActivityStack#resumeTopActivityInnerLocked：
 
 ```java
@@ -2080,7 +2104,7 @@ private boolean resumeTopActivityInnerLocked(ActivityRecord prev, Bundle options
 
 ```java
 ActivityStack lastStack = mStackSupervisor.getLastStack();
-    
+
     //这个逻辑说明当前APP进程已经被启动过
     if (next.app != null && next.app.thread != null) {
             if (DEBUG_SWITCH) Slog.v(TAG_SWITCH, "Resume running: " + next);
@@ -2098,6 +2122,8 @@ ActivityStack lastStack = mStackSupervisor.getLastStack();
 
 next.app.thread != null说明当前进程的ActivityThread已经被启动了，不需要zygote进程再重新fork进程出来，只需要拿到栈顶，展现在用户面前。
 否则，就要调用到StackSupervisor.startSpecificActivityLocked
+
+### ActivityStackSupervisor#startSpecificActivityLocked
 
 mStackSupervisor#startSpecificActivityLocked：
 
@@ -2143,6 +2169,8 @@ mStackSupervisor#startSpecificActivityLocked：
 mService.startProcessLocked(r.processName, r.info.applicationInfo, true, 0,
                 "activity", r.intent.getComponent(), false, false, true);
 ```
+
+### ActivityManagerService#startProcessLocked
 
 再来看ActivityManagerService#startProcessLocked：
 
@@ -2345,6 +2373,7 @@ private final void startProcessLocked(ProcessRecord app, String hostingType,
         }
     }
 ```
+### Process#start
 
 这里面会调用到Process#start：
 
@@ -2382,7 +2411,6 @@ Process.ProcessStartResult startResult = Process.start(entryPoint,
 ```
 
 写到这里，目标app进程就已经启动起来了(如果早就被启动过了就会回到栈顶)，接下来就是执行目标app进程ActivityThread中main()方法，开启主线程消息循环，同时将app进程通AMS绑定在一起了，下一篇blog将分析这部分代码。
-
 
   [1]: http://my.oschina.net/liucundong/blog/649490
   [2]: http://7xr1sh.dl1.z0.glb.clouddn.com/560720435361715830.jpg
